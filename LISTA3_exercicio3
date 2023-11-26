@@ -1,1 +1,68 @@
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void strlwr_custom(char str[]) {
+    for (int i = 0; i < strlen(str); i++) {
+        str[i] = tolower(str[i]);
+    }
+}
+int validarPlaca(char placa[]) {
+    int len = strlen(placa);
+    if (len != 8 && len != 7) {
+        return 0;
+    }
+    if (len == 8 && placa[3] != '-') {
+        return 0;
+    }
+    for (int i = 0; i < len; i++) {
+        if (i != 3 && !isalnum(placa[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+int validarDiaSemana(char dia_semana[]) {
+    char dias_validos[7][15] = {"SEGUNDA-FEIRA", "TERCA-FEIRA", "QUARTA-FEIRA", "QUINTA-FEIRA", "SEXTA-FEIRA", "SABADO", "DOMINGO"};
+    for (int i = 0; i < 7; i++) {
+        if (strcmp(dia_semana, dias_validos[i]) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+void verificarPlacaEDia(char placa[], char dia_semana[]) {
+    if (!validarPlaca(placa)) {
+        printf("Placa invalida\n");
+        if (!validarDiaSemana(dia_semana)) {
+            printf("Dia da semana invalido\n");
+        }
+        return;
+    }
+    if (!validarDiaSemana(dia_semana)) {
+        printf("Dia da semana invalido\n");
+        return;
+    }
+    if (strcmp(dia_semana, "SABADO") == 0 || strcmp(dia_semana, "DOMINGO") == 0) {
+        printf("Nao ha proibicao no fim de semana\n");
+        return;
+    }
+    int ultimo_digito = placa[strlen(placa) - 1] - '0';
+    if ((strcmp(dia_semana, "SEGUNDA-FEIRA") == 0 && (ultimo_digito == 0 || ultimo_digito == 1)) ||
+        (strcmp(dia_semana, "TERCA-FEIRA") == 0 && (ultimo_digito == 2 || ultimo_digito == 3)) ||
+        (strcmp(dia_semana, "QUARTA-FEIRA") == 0 && (ultimo_digito == 4 || ultimo_digito == 5)) ||
+        (strcmp(dia_semana, "QUINTA-FEIRA") == 0 && (ultimo_digito == 6 || ultimo_digito == 7)) ||
+        (strcmp(dia_semana, "SEXTA-FEIRA") == 0 && (ultimo_digito == 8 || ultimo_digito == 9))) {
+        printf("%s nao pode circular %s\n", placa, strlwr(dia_semana));
+    } else {
+        printf("%s pode circular %s\n", placa, strlwr(dia_semana));
+    }
+}
+int main() {
+    char placa[10];
+    char dia_semana[15];
+    scanf("%s", placa);
+    scanf("%s", dia_semana);
+    verificarPlacaEDia(placa, dia_semana);
+    return 0;
+}
